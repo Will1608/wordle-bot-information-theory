@@ -50,7 +50,7 @@ class WorldGame():
     # public methods
     def play_full_game(self):
         is_correct_guess = False
-        print(self.chosen_word)
+
         for guess_count in range(self.total_rounds):
             self.guess = ""
 
@@ -59,12 +59,12 @@ class WorldGame():
             
             self.clue_str = self.__get_clue_from_guess(self.guess, self.chosen_word)
 
-            print(self.guess)
-            print(self.clue_str)
-
             if(self.guess == self.chosen_word):
                 is_correct_guess = True
                 break
+            
+            print(self.guess)
+            print(self.clue_str)
 
         if(is_correct_guess):
             print(f"You found the correct word {self.chosen_word} in {guess_count + 1} tries WELL DONE!!!")
