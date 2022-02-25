@@ -55,7 +55,7 @@ class WorldGame():
             self.guess = ""
 
             while(self.__is_guess_format_correct(self.guess)):
-                self.guess = input("Enter a guess (word my be 5 long and contain only A-Z case-insensitive):").lower()
+                self.guess = input("Enter a guess (word may be 5 long and contain only A-Z case-insensitive):").lower()
             
             self.clue_str = self.__get_clue_from_guess(self.guess, self.chosen_word)
 
