@@ -9,5 +9,7 @@ To run:
 
 To do:
 
-* Handle duplicate letters like the official game
+* Check for bugs in duplicate code checker
+* refactor duplicate code (un petit peu a mess)
+* maybe write unit tests if feeling fancy
 * Actually code the bot...

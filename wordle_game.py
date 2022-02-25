@@ -23,28 +23,40 @@ class WordleGame():
     def __is_guess_format_correct(self, guess):
         return not(re.search(r'^[a-z]{5}$', guess, re.IGNORECASE) and (guess in self.allowed_words))
 
-    def __is_letter_correct(self, letter, chosen_word):
-        return letter in chosen_word
-
-    def __is_letter_in_correct_position_clue(self, index, guess, chosen_word):
-        return guess[index] == chosen_word[index]
-
-    def __get_clue_for_given_index(self, index, guess, chosen_word):
-        clue = "X"
-
-        if(self.__is_letter_correct(guess[index], chosen_word)):
-            clue = "_"
-
-            if(self.__is_letter_in_correct_position_clue(index, guess, chosen_word)):
-                clue = "O"
-                
-        return clue
+    def __get_occurence_positions(self, _list, element):
+        occurences = []
+        for idx, item in enumerate(_list):
+            if(item == element):
+                occurences.append(idx)
+        return occurences
 
     def __get_clue_from_guess(self, guess, chosen_word):
-        clue_list = []
+        letters_in_common = set(guess).intersection(set(chosen_word))
+        clue_list = ["X", "X", "X", "X", "X"]
+        for letter in letters_in_common:
+            guess_occurence_position = self.__get_occurence_positions(guess, letter)
+            chosen_word_occurence_position = self.__get_occurence_positions(chosen_word, letter)
 
-        for i in range(5):
-            clue_list.append(self.__get_clue_for_given_index(i, guess, chosen_word))
+            if(len(guess_occurence_position) == len(chosen_word_occurence_position)):
+                for i in range(len(guess_occurence_position)):
+                    clue_list[guess_occurence_position[i]] = "_"
+                    if(guess_occurence_position[i] in chosen_word_occurence_position):
+                        clue_list[guess_occurence_position[i]] = "O"
+            else:
+                if(len(guess_occurence_position) > len(chosen_word_occurence_position)):
+                    markings_to_place = len(guess_occurence_position) - len(chosen_word_occurence_position)
+                else:
+                    markings_to_place = len(guess_occurence_position)
+
+                for i in range(len(guess_occurence_position)):
+                    if(guess_occurence_position[i] in chosen_word_occurence_position):
+                        clue_list[guess_occurence_position[i]] = "O"
+                markings_to_place -= len(self.__get_occurence_positions(clue_list, "O"))
+
+                while(markings_to_place > 0):
+                    if(not(clue_list[guess_occurence_position[i]] == "O") and guess[guess_occurence_position[i]] == letter):
+                            clue_list[guess_occurence_position[i]] = "_"
+                            markings_to_place -= 1
         return "".join(clue_list)
 
     # public methods
