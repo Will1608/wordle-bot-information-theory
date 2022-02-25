@@ -1,4 +1,4 @@
-from wordle_game import WorldGame
+from wordle_game import WordleGame
 
-game = WorldGame(total_rounds=6)
+game = WordleGame(total_rounds=6)
 game.play_full_game()

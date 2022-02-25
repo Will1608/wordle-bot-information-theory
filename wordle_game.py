@@ -4,7 +4,7 @@ import re
 
 WORD_LIST_URL = "https://raw.githubusercontent.com/tabatkins/wordle-list/main/words"
 
-class WorldGame():
+class WordleGame():
     def __init__(self, total_rounds=6):
         self.allowed_words = self.__get_allowed_word_list()
         self.chosen_word = self.__choose_word(self.allowed_words)
