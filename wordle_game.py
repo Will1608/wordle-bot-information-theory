@@ -60,6 +60,9 @@ class WordleGame():
         return "".join(clue_list)
 
     # public methods
+    def play_one_round(self, guess):
+        return self.__get_clue_from_guess(guess, self.chosen_word)
+
     def play_full_game(self):
         is_correct_guess = False
 
@@ -69,7 +72,7 @@ class WordleGame():
             while(self.__is_guess_format_correct(self.guess)):
                 self.guess = input("Enter a guess (word may be 5 long and contain only A-Z case-insensitive):").lower()
             
-            self.clue_str = self.__get_clue_from_guess(self.guess, self.chosen_word)
+            self.clue_str = self.play_one_round(self.guess)
 
             if(self.guess == self.chosen_word):
                 is_correct_guess = True
