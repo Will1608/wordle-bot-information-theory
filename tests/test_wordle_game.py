@@ -38,7 +38,7 @@ def test_clue_is_correct_1_duplicate_correct_letter_incorrect_position():
 
 def test_clue_is_correct_1_duplicate_correct_letter_correct_position():
     test_guess = "abade"
-    test_word = "afijb"
+    test_word = "afijk"
 
     wordle_game = WordleGame()
     wordle_game.chosen_word = test_word
