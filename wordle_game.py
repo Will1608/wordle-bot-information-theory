@@ -31,17 +31,7 @@ class WordleGame():
                 occurences.append(idx)
         return occurences
 
-    def __case_letter_occurs_same_in_guess_and_answer(self, clue_list, guess_correct_letter_position, correct_answer_correct_letter_position):
-        updated_clue_list = clue_list
-
-        for _, item in enumerate(guess_correct_letter_position):
-            updated_clue_list[item] = "_"
-            if(item in correct_answer_correct_letter_position):
-                updated_clue_list[item] = "O"
-
-        return updated_clue_list
-    
-    def __case_letter_occurs_more_in_guess_than_answer(self, clue_list, guess_correct_letter_position, correct_answer_correct_letter_position):
+    def __case_letter_occurs_same_or_more_in_guess_and_answer(self, clue_list, guess_correct_letter_position, correct_answer_correct_letter_position):
         updated_clue_list = clue_list
 
         markings_to_place = len(correct_answer_correct_letter_position)
@@ -57,7 +47,7 @@ class WordleGame():
                  updated_clue_list[position] = "_"
 
         return updated_clue_list
-
+    
     def __case_letter_occurs_less_in_guess_than_answer(self, clue_list, guess_correct_letter_position, correct_answer_correct_letter_position):
         updated_clue_list = clue_list
 
@@ -76,20 +66,17 @@ class WordleGame():
 
     def __get_clue_from_guess(self, guess, correct_answer):
         letters_in_common = set(guess).intersection(set(correct_answer))
+
         clue_list = ["X", "X", "X", "X", "X"]
 
         for letter in letters_in_common:
             guess_correct_letter_position = self.__get_correct_letter_positions(guess, letter)
             correct_answer_correct_letter_position = self.__get_correct_letter_positions(correct_answer, letter)
 
-            if(len(guess_correct_letter_position) == len(correct_answer_correct_letter_position)):
-                clue_list = self.__case_letter_occurs_same_in_guess_and_answer(clue_list, guess_correct_letter_position, correct_answer_correct_letter_position)
+            if(len(guess_correct_letter_position) >= len(correct_answer_correct_letter_position)):
+                clue_list = self.__case_letter_occurs_same_or_more_in_guess_and_answer(clue_list, guess_correct_letter_position, correct_answer_correct_letter_position)
             else:
-                if(len(guess_correct_letter_position) > len(correct_answer_correct_letter_position)):
-                    clue_list = self.__case_letter_occurs_more_in_guess_than_answer(clue_list, guess_correct_letter_position, correct_answer_correct_letter_position)  
-
-                if(len(guess_correct_letter_position) < len(correct_answer_correct_letter_position)):
-                    clue_list = self.__case_letter_occurs_less_in_guess_than_answer(clue_list, guess_correct_letter_position, correct_answer_correct_letter_position)
+                clue_list = self.__case_letter_occurs_less_in_guess_than_answer(clue_list, guess_correct_letter_position, correct_answer_correct_letter_position)
 
         return "".join(clue_list)
 
