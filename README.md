@@ -13,3 +13,6 @@ To do:
 * refactor duplicate code (un petit peu a mess)
 * maybe write unit tests if feeling fancy
 * Actually code the bot...
+
+Run tests:
+`python -m pytest tests`

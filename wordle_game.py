@@ -8,6 +8,7 @@ class WordleGame():
     def __init__(self, total_rounds=6):
         self.allowed_words = self.__get_allowed_word_list()
         self.chosen_word = self.__choose_word(self.allowed_words)
+        print(self.chosen_word)
         self.total_rounds = total_rounds
         self.guess = None
         self.clue_str = None
@@ -23,41 +24,76 @@ class WordleGame():
     def __is_guess_format_correct(self, guess):
         return not(re.search(r'^[a-z]{5}$', guess, re.IGNORECASE) and (guess in self.allowed_words))
 
-    def __get_occurence_positions(self, _list, element):
+    def __get_correct_letter_positions(self, _list, element):
         occurences = []
         for idx, item in enumerate(_list):
             if(item == element):
                 occurences.append(idx)
         return occurences
 
-    def __get_clue_from_guess(self, guess, chosen_word):
-        letters_in_common = set(guess).intersection(set(chosen_word))
+    def __case_letter_occurs_same_in_guess_and_answer(self, clue_list, guess_correct_letter_position, correct_answer_correct_letter_position):
+        updated_clue_list = clue_list
+
+        for _, item in enumerate(guess_correct_letter_position):
+            updated_clue_list[item] = "_"
+            if(item in correct_answer_correct_letter_position):
+                updated_clue_list[item] = "O"
+
+        return updated_clue_list
+    
+    def __case_letter_occurs_more_in_guess_than_answer(self, clue_list, guess_correct_letter_position, correct_answer_correct_letter_position):
+        updated_clue_list = clue_list
+
+        markings_to_place = len(correct_answer_correct_letter_position)
+        correct_position_set = set(guess_correct_letter_position).intersection(set(correct_answer_correct_letter_position))
+
+        if(correct_position_set):
+            for position in correct_position_set:
+                markings_to_place -= 1
+                updated_clue_list[position] = "O"
+
+        for position in guess_correct_letter_position:
+            if not(position in correct_position_set) and markings_to_place > 0:
+                 updated_clue_list[position] = "_"
+
+        return updated_clue_list
+
+    def __case_letter_occurs_less_in_guess_than_answer(self, clue_list, guess_correct_letter_position, correct_answer_correct_letter_position):
+        updated_clue_list = clue_list
+
+        markings_to_place = len(guess_correct_letter_position)
+        correct_position_set = set(guess_correct_letter_position).intersection(set(correct_answer_correct_letter_position))
+
+        if(correct_position_set):
+            for position in correct_position_set:
+                markings_to_place -= 1
+                updated_clue_list[position] = "O"
+
+        for position in guess_correct_letter_position:
+            if not(position in correct_position_set) and markings_to_place > 0:
+                 updated_clue_list[position] = "_"
+        return updated_clue_list
+
+    def __get_clue_from_guess(self, guess, correct_answer):
+        letters_in_common = set(guess).intersection(set(correct_answer))
         clue_list = ["X", "X", "X", "X", "X"]
+
         for letter in letters_in_common:
-            guess_occurence_position = self.__get_occurence_positions(guess, letter)
-            chosen_word_occurence_position = self.__get_occurence_positions(chosen_word, letter)
+            guess_correct_letter_position = self.__get_correct_letter_positions(guess, letter)
+            correct_answer_correct_letter_position = self.__get_correct_letter_positions(correct_answer, letter)
 
-            if(len(guess_occurence_position) == len(chosen_word_occurence_position)):
-                for i in range(len(guess_occurence_position)):
-                    clue_list[guess_occurence_position[i]] = "_"
-                    if(guess_occurence_position[i] in chosen_word_occurence_position):
-                        clue_list[guess_occurence_position[i]] = "O"
+            if(len(guess_correct_letter_position) == len(correct_answer_correct_letter_position)):
+                clue_list = self.__case_letter_occurs_same_in_guess_and_answer(clue_list, guess_correct_letter_position, correct_answer_correct_letter_position)
             else:
-                if(len(guess_occurence_position) > len(chosen_word_occurence_position)):
-                    markings_to_place = len(guess_occurence_position) - len(chosen_word_occurence_position)
-                else:
-                    markings_to_place = len(guess_occurence_position)
+                if(len(guess_correct_letter_position) > len(correct_answer_correct_letter_position)):
+                    clue_list = self.__case_letter_occurs_more_in_guess_than_answer(clue_list, guess_correct_letter_position, correct_answer_correct_letter_position)  
 
-                for i in range(len(guess_occurence_position)):
-                    if(guess_occurence_position[i] in chosen_word_occurence_position):
-                        clue_list[guess_occurence_position[i]] = "O"
-                markings_to_place -= len(self.__get_occurence_positions(clue_list, "O"))
+                if(len(guess_correct_letter_position) < len(correct_answer_correct_letter_position)):
+                    clue_list = self.__case_letter_occurs_less_in_guess_than_answer(clue_list, guess_correct_letter_position, correct_answer_correct_letter_position)
 
-                while(markings_to_place > 0):
-                    if(not(clue_list[guess_occurence_position[i]] == "O") and guess[guess_occurence_position[i]] == letter):
-                            clue_list[guess_occurence_position[i]] = "_"
-                            markings_to_place -= 1
         return "".join(clue_list)
+
+
 
     # public methods
     def play_one_round(self, guess):
