@@ -11,3 +11,15 @@ def test_clue_is_correct_duplicate_in_guess_and_word_with_1_correct_position():
     true_results = wordle_game.play_one_round(test_guess)
 
     assert expected_results == true_results
+
+def test_clue_is_correct_duplicate_in_guess_and_word_with_1_correct_position():
+    test_guess = "apple"
+    test_word = "pavan"
+
+    wordle_game = WordleGame()
+    wordle_game.chosen_word = test_word
+
+    expected_results = "__XXX"
+    true_results = wordle_game.play_one_round(test_guess)
+
+    assert expected_results == true_results

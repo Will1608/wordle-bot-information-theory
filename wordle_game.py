@@ -8,7 +8,6 @@ class WordleGame():
     def __init__(self, total_rounds=6):
         self.allowed_words = self.__get_allowed_word_list()
         self.chosen_word = self.__choose_word(self.allowed_words)
-        print(self.chosen_word)
         self.total_rounds = total_rounds
         self.guess = None
         self.clue_str = None
@@ -36,7 +35,6 @@ class WordleGame():
 
         markings_to_place = len(correct_answer_correct_letter_position)
         correct_position_set = set(guess_correct_letter_position).intersection(set(correct_answer_correct_letter_position))
-
         if(correct_position_set):
             for position in correct_position_set:
                 markings_to_place -= 1
@@ -44,7 +42,8 @@ class WordleGame():
 
         for position in guess_correct_letter_position:
             if not(position in correct_position_set) and markings_to_place > 0:
-                 updated_clue_list[position] = "_"
+                markings_to_place -= 1
+                updated_clue_list[position] = "_"
 
         return updated_clue_list
     
@@ -61,7 +60,8 @@ class WordleGame():
 
         for position in guess_correct_letter_position:
             if not(position in correct_position_set) and markings_to_place > 0:
-                 updated_clue_list[position] = "_"
+                markings_to_place -= 1
+                updated_clue_list[position] = "_"
         return updated_clue_list
 
     def __get_clue_from_guess(self, guess, correct_answer):
