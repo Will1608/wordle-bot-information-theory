@@ -31,47 +31,87 @@ def get_entropy_for_word_list(word_list, letter_probability_distribution):
 
     return word_list_entropy
 
-def get_max_entopy_word(word_list_entropy, word_list):
+def get_max_entopy_word(word_list):
+
+    letter_probability_distribution = probability_of_each_letter(word_list)
+
+    word_list_entropy = get_entropy_for_word_list(word_list, letter_probability_distribution)
+
     max_entropy_index = word_list_entropy.index(max(word_list_entropy))
     
     return word_list[max_entropy_index]
+
+def update_word_list(word_list, previous_guess, known_letters_not_in_word, known_letters_in_word, know_correct_position_letters_in_word):
+    updated_word_list = []
+    word_list.remove(previous_guess)
+
+    for word in word_list:
+        word_to_keep = True
+
+        for letter in known_letters_in_word:
+            if not(letter in word):
+                word_to_keep = False
+        
+        if(word_to_keep):
+            for letter, position in know_correct_position_letters_in_word.items():
+                if not(word[position] == letter):
+                    word_to_keep = False
+
+        if(word_to_keep):
+            for letter in known_letters_not_in_word:
+                if(letter in word):
+                    word_to_keep = False
+
+        if(word_to_keep):
+            updated_word_list.append(word)
+
+    return updated_word_list
 
 test_game = WordleGame()
 
 word_list = test_game.allowed_words
 
-updated_word_list = []
-known_letters_not_in_word = ['r','s','o','n','d','p', 't', 'g', 'm', 'i', 'c']
-know_correct_position_letters_in_word = {'e': 2, 'a':3}
-known_letters_in_word = ['l']
-known_letters_in_word.extend(know_correct_position_letters_in_word.keys())
+known_letters_not_in_word = []
+know_correct_position_letters_in_word = {}
+known_letters_in_word = []
 
-for word in word_list:
+print(test_game.chosen_word)
+for round in range(6):
+    is_won = False
 
-    word_to_keep = True
+    if(round == 0):
+        round_0_word_list = [word for word in word_list if len(set(word)) == len(word)]
+        guess = get_max_entopy_word(round_0_word_list)
+    else:
+        guess = get_max_entopy_word(word_list)
+    
+    clue = test_game.play_one_round(guess)
 
-    for letter in known_letters_in_word:
-        if not(letter in word):
-            word_to_keep = False
+    print(f"Bot guessed : {guess}")
+    print(f"Got clue {clue}")
 
-    if(word_to_keep):
-        for letter, position in know_correct_position_letters_in_word.items():
-            if not(word[position] == letter):
-                word_to_keep = False
+    if(clue == "OOOOO"):
+        is_won = True
+        break
+    
+    for idx, value in enumerate(clue):
+        if(value == 'X' and (guess[idx] not in known_letters_not_in_word)):
+            known_letters_not_in_word.append(guess[idx])
+        elif(value=="_" and (guess[idx] not in known_letters_in_word)):
+            known_letters_in_word.append(guess[idx])
+        elif(value=="O" and (guess[idx] not in know_correct_position_letters_in_word.keys())):
+            know_correct_position_letters_in_word[guess[idx]] = idx
+    
+    print(known_letters_not_in_word)
+    print(known_letters_in_word)
+    print(know_correct_position_letters_in_word)
+    known_letters_in_word.extend(know_correct_position_letters_in_word.keys())
+    word_list = update_word_list(word_list, guess, known_letters_not_in_word, known_letters_in_word, know_correct_position_letters_in_word)
+    input("")
 
-    if(word_to_keep):
-        for letter in known_letters_not_in_word:
-            if(letter in word):
-                word_to_keep = False
-
-    if(word_to_keep):
-        updated_word_list.append(word)
-
-word_list = updated_word_list
-word_list = [word for word in word_list if len(set(word)) == len(word)]
-
-letter_probability_distribution = probability_of_each_letter(word_list)
-word_list_entropy = get_entropy_for_word_list(word_list, letter_probability_distribution)
-print(get_max_entopy_word(word_list_entropy, word_list))
+if(is_won):
+    print(f"Bot won in {round} rounds with {test_game.chosen_word}")
+else:
+    print(f"Bot lost the correct guess was {test_game.chosen_word}")
 
 
