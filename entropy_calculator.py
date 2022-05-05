@@ -1,3 +1,4 @@
+from lib2to3.pytree import LeafPattern
 from wordle_game import WordleGame
 import math
 
@@ -44,6 +45,11 @@ def get_max_entopy_word(word_list):
 def update_word_list(word_list, previous_guess, known_letters_not_in_word, known_letters_in_word, know_correct_position_letters_in_word):
     updated_word_list = []
     word_list.remove(previous_guess)
+    duplicate_letter_set = set(known_letters_not_in_word).intersection(set(known_letters_in_word))
+    
+    for letter in duplicate_letter_set:
+        word_list = [word for word in word_list if word.count(letter) == 1]
+        known_letters_not_in_word.remove(letter)
 
     for word in word_list:
         word_to_keep = True
@@ -101,13 +107,9 @@ for round in range(6):
             known_letters_in_word.append(guess[idx])
         elif(value=="O" and (guess[idx] not in know_correct_position_letters_in_word.keys())):
             know_correct_position_letters_in_word[guess[idx]] = idx
-    
-    print(known_letters_not_in_word)
-    print(known_letters_in_word)
-    print(know_correct_position_letters_in_word)
+
     known_letters_in_word.extend(know_correct_position_letters_in_word.keys())
     word_list = update_word_list(word_list, guess, known_letters_not_in_word, known_letters_in_word, know_correct_position_letters_in_word)
-    input("")
 
 if(is_won):
     print(f"Bot won in {round} rounds with {test_game.chosen_word}")
