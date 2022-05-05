@@ -42,7 +42,7 @@ def get_max_entopy_word(word_list):
     
     return word_list[max_entropy_index]
 
-def update_word_list(word_list, known_bad_letters, known_letters, know_incorrect_position_letters, know_correct_position_letters):
+def update_word_list(word_list, known_bad_letters, known_letters, known_incorrect_position_letters, known_correct_position_letters):
     updated_word_list = []
     duplicate_letter_set = set(known_bad_letters).intersection(set(known_letters))
     
@@ -53,7 +53,7 @@ def update_word_list(word_list, known_bad_letters, known_letters, know_incorrect
     for word in word_list:
         word_to_keep = True
 
-        for (letter, position) in know_correct_position_letters:
+        for (letter, position) in known_correct_position_letters:
             if not(word[position] == letter):
                 word_to_keep = False
 
@@ -63,7 +63,7 @@ def update_word_list(word_list, known_bad_letters, known_letters, know_incorrect
                     word_to_keep = False
         
         if(word_to_keep):
-            for (letter, position) in know_incorrect_position_letters:
+            for (letter, position) in known_incorrect_position_letters:
                 if word[position] == letter:
                     word_to_keep = False
 
@@ -81,12 +81,12 @@ test_game = WordleGame()
 
 word_list = test_game.allowed_words
 
-known_bad_letters = []
-know_correct_position_letters = []
-know_incorrect_position_letters = []
-known_letters = []
-
 for round in range(6):
+    known_bad_letters = []
+    known_correct_position_letters = []
+    known_incorrect_position_letters = []
+    known_letters = []
+
     is_won = False
 
     if(round == 0):
@@ -109,13 +109,12 @@ for round in range(6):
             known_bad_letters.append(guess[idx])
         elif(value=="_" and (guess[idx] not in known_letters)):
             known_letters.append(guess[idx])
-            know_incorrect_position_letters.append((guess[idx], idx))
+            known_incorrect_position_letters.append((guess[idx], idx))
         elif(value=="O"):
-            know_correct_position_letters.append((guess[idx], idx))
-            if not(guess[idx] in known_letters):
-                known_letters.append(guess[idx])
+            known_correct_position_letters.append((guess[idx], idx))
+            known_letters.append(guess[idx])
 
-    word_list = update_word_list(word_list, known_bad_letters, known_letters, know_incorrect_position_letters, know_correct_position_letters)
+    word_list = update_word_list(word_list, known_bad_letters, known_letters, known_incorrect_position_letters, known_correct_position_letters)
 
 if(is_won):
     print(f"Bot won in {round + 1} rounds with {test_game.chosen_word}")
