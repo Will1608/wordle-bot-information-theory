@@ -9,10 +9,8 @@ To run:
 
 To do:
 
-* Check for bugs in duplicate code checker
-* refactor duplicate code (un petit peu a mess)
-* maybe write unit tests if feeling fancy
-* Actually code the bot...
+* Clean bot code and OO it
+* Add letter position consideration to bot
 
 Run tests:
 `python -m pytest tests`
