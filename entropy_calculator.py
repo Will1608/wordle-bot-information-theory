@@ -42,13 +42,12 @@ def get_max_entopy_word(word_list):
     
     return word_list[max_entropy_index]
 
-def update_word_list(word_list, previous_guess, known_bad_letters, known_letters, know_incorrect_position_letters, know_correct_position_letters):
+def update_word_list(word_list, known_bad_letters, known_letters, know_incorrect_position_letters, know_correct_position_letters):
     updated_word_list = []
-    word_list.remove(previous_guess)
     duplicate_letter_set = set(known_bad_letters).intersection(set(known_letters))
     
     for letter in duplicate_letter_set:
-        word_list = [word for word in word_list if word.count(letter) == 1]
+        word_list = [word for word in word_list if word.count(letter) == known_letters.count(letter)]
         known_bad_letters.remove(letter)
 
     for word in word_list:
@@ -87,10 +86,9 @@ know_correct_position_letters = []
 know_incorrect_position_letters = []
 known_letters = []
 
-print(test_game.chosen_word)
 for round in range(6):
     is_won = False
-    print(len(word_list))
+
     if(round == 0):
         round_0_word_list = [word for word in word_list if len(set(word)) == len(word)]
         guess = get_max_entopy_word(round_0_word_list)
@@ -99,8 +97,8 @@ for round in range(6):
     
     clue = test_game.play_one_round(guess)
 
-    print(f"Bot guessed : {guess}")
-    print(f"Got clue {clue}")
+    print(guess)
+    print(clue)
 
     if(clue == "OOOOO"):
         is_won = True
@@ -114,9 +112,10 @@ for round in range(6):
             know_incorrect_position_letters.append((guess[idx], idx))
         elif(value=="O"):
             know_correct_position_letters.append((guess[idx], idx))
-            known_letters.append(guess[idx])
+            if not(guess[idx] in known_letters):
+                known_letters.append(guess[idx])
 
-    word_list = update_word_list(word_list, guess, known_bad_letters, known_letters, know_incorrect_position_letters, know_correct_position_letters)
+    word_list = update_word_list(word_list, known_bad_letters, known_letters, know_incorrect_position_letters, know_correct_position_letters)
 
 if(is_won):
     print(f"Bot won in {round + 1} rounds with {test_game.chosen_word}")
