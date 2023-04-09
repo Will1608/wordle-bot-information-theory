@@ -80,8 +80,6 @@ class WordleGame():
 
         return "".join(clue_list)
 
-
-
     # public methods
     def play_one_round(self, guess):
         return self.__get_clue_from_guess(guess, self.chosen_word)

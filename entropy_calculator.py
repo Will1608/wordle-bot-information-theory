@@ -1,4 +1,3 @@
-from lib2to3.pytree import LeafPattern
 from wordle_game import WordleGame
 import math
 
@@ -76,49 +75,4 @@ def update_word_list(word_list, known_bad_letters, known_letters, known_incorrec
             updated_word_list.append(word)
 
     return updated_word_list
-
-test_game = WordleGame()
-
-word_list = test_game.allowed_words
-
-for round in range(6):
-    known_bad_letters = []
-    known_correct_position_letters = []
-    known_incorrect_position_letters = []
-    known_letters = []
-
-    is_won = False
-
-    if(round == 0):
-        round_0_word_list = [word for word in word_list if len(set(word)) == len(word)]
-        guess = get_max_entopy_word(round_0_word_list)
-    else:
-        guess = get_max_entopy_word(word_list)
-    
-    clue = test_game.play_one_round(guess)
-
-    print(guess)
-    print(clue)
-
-    if(clue == "OOOOO"):
-        is_won = True
-        break
-    
-    for idx, value in enumerate(clue):
-        if(value == 'X' and (guess[idx] not in known_bad_letters)):
-            known_bad_letters.append(guess[idx])
-        elif(value=="_" and (guess[idx] not in known_letters)):
-            known_letters.append(guess[idx])
-            known_incorrect_position_letters.append((guess[idx], idx))
-        elif(value=="O"):
-            known_correct_position_letters.append((guess[idx], idx))
-            known_letters.append(guess[idx])
-
-    word_list = update_word_list(word_list, known_bad_letters, known_letters, known_incorrect_position_letters, known_correct_position_letters)
-
-if(is_won):
-    print(f"Bot won in {round + 1} rounds with {test_game.chosen_word}")
-else:
-    print(f"Bot lost the correct guess was {test_game.chosen_word}")
-
 
