@@ -4,14 +4,11 @@ The word list used for this project can be found [here](https://raw.githubuserco
 
 To run:
 * Install reqirements `pip install request selenium`
-* Move into the correct directory `cd Solving-wordle-with-information-theory-and-python`
-* Run the game with `python web_bot`
-* (Optional) you can add `MOZ_HEADLESS=1 python web_bot
+* Run the game with `python web_bot` to see the bot in action
+* (Optional) you can add `MOZ_HEADLESS=1 python web_bot` to hide follow the game from the command line
 
-To do:
+TO DO:
 
-* Clean bot code and OO it
-* Add letter position consideration to bot
-
-Run tests:
-`python -m pytest tests`
+* Clean the code
+* Making it run daily 
+* Build bot with different algorithms and make them compete
