@@ -3,9 +3,10 @@
 The word list used for this project can be found [here](https://raw.githubusercontent.com/tabatkins/wordle-list/main/words)
 
 To run:
-* Install requirements `pip install requests`
+* Install reqirements `pip install request selenium`
 * Move into the correct directory `cd Solving-wordle-with-information-theory-and-python`
-* Run the game with`python example.py`
+* Run the game with `python web_bot`
+* (Optional) you can add `MOZ_HEADLESS=1 python web_bot
 
 To do:
 
