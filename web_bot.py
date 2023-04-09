@@ -31,7 +31,8 @@ word_list = [word for word in bot_brain.allowed_words if len(set(word)) == len(w
 for round in range(6):
     is_won = True
     guess =  entropy_calculator.get_max_entopy_word(word_list)
-    
+    print(f"Bot guessed:\n{guess}")
+
     browser.find_element("css selector", "body").click()
     browser.find_element("css selector", "body").send_keys(guess, Keys.ENTER)
     time.sleep(2)
@@ -51,7 +52,9 @@ for round in range(6):
 
         if letter_clue != "O":
             is_won = False
+        print(letter_clue, end="")
 
+    print("")
     word_list = entropy_calculator.update_word_list(word_list, known_bad_letters, known_letters, known_incorrect_position_letters, known_correct_position_letters)
 
     if is_won:
@@ -61,4 +64,5 @@ if is_won:
     print(f"Bot Wins in {round + 1} rounds")
 else:
     print("Bot lost no way a human can win today")
-    
+
+browser.close()
