@@ -11,7 +11,6 @@ class WordleGame():
         self.total_rounds = total_rounds
         self.guess = None
         self.clue_str = None
-        self.is_guess_correct = False
 
     # private methods
     def __get_allowed_word_list(self):
