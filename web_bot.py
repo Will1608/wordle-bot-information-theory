@@ -3,16 +3,7 @@ from selenium.webdriver.common.keys import Keys
 import time
 from basic_entropy_bot import BasicEntropyBot
 import wordle_params
-
-def printFriendlyClue(clues):
-    for clue in clues:
-        if clue == "present":
-            print("_", end="")
-        elif clue == "absent":
-            print("X", end="")
-        else:
-            print("O", end="")
-    print("")
+from utils import printFriendlyClue
 
 browser = webdriver.Firefox()
 
