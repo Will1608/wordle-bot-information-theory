@@ -1,19 +1,20 @@
-from wordle_game import WordleGame
 import math
 
+# TODO make interface for algorithms establish standard set of methods 
+# to make each algorithms standard  
+# FIXME use ascii char codes and 26 long dictionary instead of
+# dictionary
 def probability_of_each_letter(word_list):
     letter_occurence_ditionary = {}
     total_letters = 0
 
     for word in word_list:
-
         for letter in word:
-
             letter_occurence_ditionary.setdefault(letter, 0)
             letter_occurence_ditionary[letter] += 1
             total_letters += 1
     
-    return { letter:occurence/total_letters for (letter, occurence) in letter_occurence_ditionary.items()}
+    return {letter:occurence/total_letters for (letter, occurence) in letter_occurence_ditionary.items()}
 
 def get_entropy_for_word(word, letter_probability_distribution):
     entropy = 0
@@ -32,11 +33,8 @@ def get_entropy_for_word_list(word_list, letter_probability_distribution):
     return word_list_entropy
 
 def get_max_entopy_word(word_list):
-
     letter_probability_distribution = probability_of_each_letter(word_list)
-
     word_list_entropy = get_entropy_for_word_list(word_list, letter_probability_distribution)
-
     max_entropy_index = word_list_entropy.index(max(word_list_entropy))
     
     return word_list[max_entropy_index]

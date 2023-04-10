@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
 from wordle_game import WordleGame
-import entropy_calculator
+import entropy
 
 bot_brain = WordleGame(total_rounds=6)
 
@@ -30,7 +30,7 @@ browser.find_element("class name", "Modal-module_closeIcon__TcEKb").click()
 word_list = [word for word in bot_brain.allowed_words if len(set(word)) == len(word)]
 for round in range(6):
     is_won = True
-    guess =  entropy_calculator.get_max_entopy_word(word_list)
+    guess =  entropy.get_max_entopy_word(word_list)
     print(f"Bot guessed:\n{guess}")
 
     browser.find_element("css selector", "body").click()
@@ -55,7 +55,7 @@ for round in range(6):
         print(letter_clue, end="")
 
     print("")
-    word_list = entropy_calculator.update_word_list(word_list, known_bad_letters, known_letters, known_incorrect_position_letters, known_correct_position_letters)
+    word_list = entropy.update_word_list(word_list, known_bad_letters, known_letters, known_incorrect_position_letters, known_correct_position_letters)
 
     if is_won:
         break

@@ -12,7 +12,7 @@ def test_clue_is_correct_duplicate_in_guess_and_word_with_1_correct_position():
 
     assert expected_results == true_results
 
-def test_clue_is_correct_duplicate_in_guess_and_word_with_1_correct_position():
+def test_clue_is_correct_duplicate_in_guess_and_no_correc_position():
     test_guess = "apple"
     test_word = "pavan"
 
