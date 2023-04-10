@@ -1,22 +1,18 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
-from wordle_game import WordleGame
-import entropy
+from basic_entropy_bot import BasicEntropyBot
+import wordle_params
 
-bot_brain = WordleGame(total_rounds=6)
-
-known_bad_letters = []
-known_correct_position_letters = []
-known_incorrect_position_letters = []
-known_letters = []
-
-def dataStateToGameState(dataState):
-    if dataState == "present":
-        return "_"
-    if dataState == "absent":
-        return "X"
-    return "O"
+def printFriendlyClue(clues):
+    for clue in clues:
+        if clue == "present":
+            print("_", end="")
+        elif clue == "absent":
+            print("X", end="")
+        else:
+            print("O", end="")
+    print("")
 
 browser = webdriver.Firefox()
 
@@ -27,38 +23,30 @@ browser.find_element("id", "pz-gdpr-btn-reject").click()
 browser.find_element("class name", "Modal-module_closeIcon__TcEKb").click()
 
 # Start playing
-word_list = [word for word in bot_brain.allowed_words if len(set(word)) == len(word)]
-for round in range(6):
-    is_won = True
-    guess =  entropy.get_max_entopy_word(word_list)
-    print(f"Bot guessed:\n{guess}")
+bot = BasicEntropyBot()
 
+for round in range(wordle_params.ROUND_COUNT):
+    if round == 0:
+        bot.initialise_round(is_first_round=True)
+    else:
+        bot.initialise_round()
+
+    is_won = False
+    print(f"Bot guessed:\n{bot.guess}")
+    
     browser.find_element("css selector", "body").click()
-    browser.find_element("css selector", "body").send_keys(guess, Keys.ENTER)
+    browser.find_element("css selector", "body").send_keys(bot.guess, Keys.ENTER)
     time.sleep(2)
     tiles = browser.find_elements("class name", "Tile-module_tile__UWEHN")
 
-    for i in range(round * 5, round * 5 + 5):
-        letter_clue = dataStateToGameState(tiles[i].get_attribute("data-state"))
+    clues = [tiles[i].get_attribute("data-state") for i in range(round * wordle_params.WORD_LENGTH, round * wordle_params.WORD_LENGTH + wordle_params.WORD_LENGTH)]
+    printFriendlyClue(clues)
 
-        if(letter_clue == 'X' and (guess[i % 5] not in known_bad_letters)):
-            known_bad_letters.append(guess[i % 5])
-        elif(letter_clue=="_" and (guess[i % 5] not in known_letters)):
-            known_letters.append(guess[i % 5])
-            known_incorrect_position_letters.append((guess[i % 5], i % 5))
-        elif(letter_clue=="O"):
-            known_correct_position_letters.append((guess[i % 5], i % 5))
-            known_letters.append(guess[i % 5])
-
-        if letter_clue != "O":
-            is_won = False
-        print(letter_clue, end="")
-
-    print("")
-    word_list = entropy.update_word_list(word_list, known_bad_letters, known_letters, known_incorrect_position_letters, known_correct_position_letters)
-
-    if is_won:
+    if clues == ["correct"] * wordle_params.WORD_LENGTH:
+        is_won = True
         break
+
+    bot.end_round(clues)
 
 if is_won:
     print(f"Bot Wins in {round + 1} rounds")
