@@ -4,85 +4,93 @@ import wordle_params
 
 class BasicEntropyBot:
     def __init__(self):
-        self.word_list = requests.get(wordle_params.WORD_LIST_URL).text.split("\n")
-        self.word_list_entropy = None
-        self.pdf = [0] * 26
-        self.known_absent, self.known_present = set(), set()
+        self.words = requests.get(wordle_params.WORD_LIST_URL).text.split("\n")
+        self.known_absent = set()
+        self.known_present = {}
         self.known_correct = [""] * wordle_params.WORD_LENGTH
         self.known_incorrect_positions = [set(), set(), set(), set(), set()]
-        self.guess = ""
 
     def initialise_round(self, is_first_round=False):
         if is_first_round:
-            self.word_list = [word for word in self.word_list if len(set(word)) == len(word)]
-        else:
-            self.update_word_list()
+            first_round_words = [word for word in self.words if len(set(word)) == len(word)]
+            firs_round_words_entropy = self.get_words_entropy(first_round_words)
+            return first_round_words[firs_round_words_entropy.index(max(firs_round_words_entropy))]
         
-        self.update_word_list_entropy()
-        self.guess = self.word_list[self.word_list_entropy.index(max(self.word_list_entropy))]
+        self.update_words()
+        words_entropy = self.get_words_entropy(self.words)
+        return self.words[words_entropy.index(max(words_entropy))]
 
-    def end_round(self, returned_clue):
-        for index, indicator in enumerate(returned_clue):
-            if indicator == wordle_params.WORDLE_ABSENT_MARKER:
-                self.known_absent.add(self.guess[index])
-            elif indicator == wordle_params.WORDLE_CORRECT_MARKER:
-                self.known_present.discard(self.guess[index])
-                self.known_correct[index] = self.guess[index]
 
-        for index, indicator in enumerate(returned_clue):
+    def end_round(self, clues, guess):
+        self.known_present = {}
+
+        for index, indicator in enumerate(clues):
+            if indicator == wordle_params.WORDLE_CORRECT_MARKER:
+                self.known_correct[index] = guess[index]
+
+                if self.known_present.get(guess[index], False):
+                    self.known_present[guess[index]] -= 1
+
+        for index, indicator in enumerate(clues):
             if indicator == wordle_params.WORDLE_PRESENT_MARKER:
-                self.known_present.add(self.guess[index])
-                self.known_incorrect_positions[index].add(self.guess[index])
+                self.known_present .setdefault(guess[index], 0)
+                self.known_present [guess[index]] += 1
 
-    def update_word_list(self):
+                self.known_incorrect_positions[index].add(guess[index])
+
+        for index, indicator in enumerate(clues):
+            if indicator == wordle_params.WORDLE_ABSENT_MARKER and guess[index] not in self.known_present.keys() and guess[index] not in self.known_correct:
+                self.known_absent.add(guess[index])
+
+    def update_words(self):
         updated_word_list = []
 
-        for word in self.word_list:
+        for word in self.words:
             is_word_to_keep = True
+            for index, letter in enumerate(word):
+                if self.known_correct[index] != "" and self.known_correct[index] != letter:
+                    is_word_to_keep = False
+                    break
+                if letter in self.known_incorrect_positions[index]:
+                    is_word_to_keep = False
+                    break
+                if letter in self.known_absent:
+                    is_word_to_keep = False
+                    break
 
-            if len(set(word).intersection(self.known_present)) == len(self.known_present): 
-
-                for index, letter in enumerate(word):
-                    if self.known_correct[index] != "":
-                        if self.known_correct[index] != letter:
-                            is_word_to_keep = False
-                            break
-                    
-                    if letter in self.known_incorrect_positions[index]:
+            if is_word_to_keep:
+                for letter, occurence in self.known_present.items():
+                    if occurence > word.count(letter):
                         is_word_to_keep = False
                         break
 
-                    if letter in self.known_absent:
-                        is_word_to_keep = False
-                        break
+            if is_word_to_keep:
+                updated_word_list.append(word)
+        self.words = updated_word_list
 
-                if is_word_to_keep:
-                    updated_word_list.append(word)
-
-        self.word_list = updated_word_list
-
-    def update_pdf(self):
+    def get_pdf(self, words):
         total_letters = 0
-
-        for word in self.word_list:
+        pdf = [0] * 26
+        for word in words:
             for letter in word:
                 # 97 is a in ascii so -97 to offset to 0
-                self.pdf[ord(letter) - 97] += 1
+                pdf[ord(letter) - 97] += 1
                 total_letters += 1
-        
-        self.pdf = [letter_probability / total_letters for letter_probability in self.pdf]
 
-    def update_word_list_entropy(self):
-        self.update_pdf()
-        self.word_list_entropy = []
-        for word in self.word_list:
-            self.word_list_entropy.append(self.get_entropy_for_word(word))
-    
-    def get_entropy_for_word(self, word):
+        return [letter_probability / total_letters for letter_probability in pdf]
+
+    def get_words_entropy(self, words):
+        pdf = self.get_pdf(words)
+        words_entropies = []
+        for word in words:
+            words_entropies.append(self.get_entropy_for_word(word, pdf))
+        return words_entropies
+
+    def get_entropy_for_word(self, word, pdf):
         entropy = 0
 
         for letter in word:
-            entropy += self.pdf[ord(letter) - 97] * math.log(self.pdf[ord(letter) - 97], 26)
+            entropy += pdf[ord(letter) - 97] * math.log(pdf[ord(letter) - 97], 26)
 
         return -entropy
 

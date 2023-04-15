@@ -2,24 +2,36 @@ import requests
 from basic_entropy_bot import BasicEntropyBot
 import wordle_params
 from wordle_game import WordleGame
-from utils import printFriendlyClue
+import wordle_params
 
-word_list = requests.get(wordle_params.WORD_LIST_URL).text.split("\n")
+words = requests.get(wordle_params.WORD_LIST_URL).text.split("\n")
 
 # basic entropy bot
-for word in word_list:
+correct_word, incorrect_word = [], []
+correct_rounds = 0
+print(f"Running test for Basic entropy bot")
+for word in words:
     bot = BasicEntropyBot()
     game = WordleGame(word)
+    bot_won = False
     for i in range(wordle_params.ROUND_COUNT):
         if i == 0:
-            bot.initialise_round(is_first_round=True)
+            guess = bot.initialise_round(is_first_round=True)
         else:
-            bot.initialise_round()
+            guess = bot.initialise_round()
         
-        clues = game.play_one_round(bot.guess)
-        bot.end_round(clues)
-        print(word)
-        print(bot.guess)
-        printFriendlyClue(clues)
-    break
+        clues = game.play_one_round(guess)
+        if clues == [wordle_params.WORDLE_CORRECT_MARKER] * 5:
+            bot_won = True
+            break
 
+        bot.end_round(clues, guess)
+    
+    if bot_won:
+        correct_word.append(word)
+        correct_rounds += i + 1
+    else:
+        incorrect_word.append(word)
+
+print(len(correct_rounds) / (len(correct_rounds) + len(incorrect_word)))
+print(correct_rounds/(len(correct_rounds) + len(incorrect_word)))

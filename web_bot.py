@@ -18,15 +18,15 @@ bot = BasicEntropyBot()
 
 for round in range(wordle_params.ROUND_COUNT):
     if round == 0:
-        bot.initialise_round(is_first_round=True)
+        guess = bot.initialise_round(is_first_round=True)
     else:
-        bot.initialise_round()
+        guess = bot.initialise_round()
 
     is_won = False
-    print(f"Bot guessed:\n{bot.guess}")
+    print(f"Bot guessed:\n{guess}")
     
     browser.find_element("css selector", "body").click()
-    browser.find_element("css selector", "body").send_keys(bot.guess, Keys.ENTER)
+    browser.find_element("css selector", "body").send_keys(guess, Keys.ENTER)
     time.sleep(2)
     tiles = browser.find_elements("class name", "Tile-module_tile__UWEHN")
 
@@ -37,7 +37,7 @@ for round in range(wordle_params.ROUND_COUNT):
         is_won = True
         break
 
-    bot.end_round(clues)
+    bot.end_round(clues, guess)
 
 if is_won:
     print(f"Bot Wins in {round + 1} rounds")
