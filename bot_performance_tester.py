@@ -33,5 +33,5 @@ for word in words:
     else:
         incorrect_word.append(word)
 
-print(len(correct_rounds) / (len(correct_rounds) + len(incorrect_word)))
+print(len(correct_word) / (len(correct_word) + len(incorrect_word)))
 print(correct_rounds/(len(correct_rounds) + len(incorrect_word)))
