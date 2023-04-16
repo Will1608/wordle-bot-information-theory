@@ -7,7 +7,7 @@ import wordle_params
 words = requests.get(wordle_params.WORD_LIST_URL).text.split("\n")
 
 # basic entropy bot
-correct_word, incorrect_word = [], []
+correct_words, incorrect_words = [], []
 correct_rounds = 0
 print(f"Running test for Basic entropy bot")
 for word in words:
@@ -28,10 +28,10 @@ for word in words:
         bot.end_round(clues, guess)
     
     if bot_won:
-        correct_word.append(word)
+        correct_words.append(word)
         correct_rounds += i + 1
     else:
-        incorrect_word.append(word)
+        incorrect_words.append(word)
 
-print(len(correct_word) / (len(correct_word) + len(incorrect_word)))
-print(correct_rounds/(len(correct_rounds) + len(incorrect_word)))
+print(len(correct_words) / (len(correct_words) + len(incorrect_words)))
+print(correct_rounds/(len(correct_words)))
