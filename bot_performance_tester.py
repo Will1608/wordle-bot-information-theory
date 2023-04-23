@@ -9,7 +9,7 @@ words = requests.get(wordle_params.WORD_LIST_URL).text.split("\n")
 
 correct_words, incorrect_words = [], []
 correct_rounds = 0
-print(f"Running test for Basic entropy bot")
+print(f"Running tests")
 for round, word in enumerate(words):
     bot = PositionEntropyBot() # replace this with the bot to test
     game = WordleGame(word)
