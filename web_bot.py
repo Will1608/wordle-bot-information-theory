@@ -2,7 +2,6 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
 from basic_entropy_bot import BasicEntropyBot
-from position_entropy_bot import PositionEntropyBot
 import wordle_params
 from utils import printFriendlyClue
 
@@ -15,7 +14,7 @@ browser.find_element("id", "pz-gdpr-btn-reject").click()
 browser.find_element("class name", "Modal-module_closeIcon__TcEKb").click()
 
 # Start playing
-bot = PositionEntropyBot()
+bot = BasicEntropyBot()
 
 for round in range(wordle_params.ROUND_COUNT):
     if round == 0:

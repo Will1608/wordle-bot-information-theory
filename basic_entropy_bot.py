@@ -39,14 +39,15 @@ class BasicEntropyBot:
                 self.known_incorrect_positions[index].add(guess[index])
 
         for index, indicator in enumerate(clues):
-            if indicator == wordle_params.WORDLE_ABSENT_MARKER and guess[index] not in self.known_present.keys() and guess[index] not in self.known_correct:
+            if indicator == wordle_params.WORDLE_ABSENT_MARKER and guess[index] not in self.known_present.keys():
                 self.known_absent.add(guess[index])
 
     def update_words(self):
         updated_word_list = []
 
         for word in self.words:
-            is_word_to_keep = True
+
+            is_word_to_keep = True # assume all words are to keep 
             for index, letter in enumerate(word):
                 if self.known_correct[index] != "" and self.known_correct[index] != letter:
                     is_word_to_keep = False
@@ -54,7 +55,13 @@ class BasicEntropyBot:
                 if letter in self.known_incorrect_positions[index]:
                     is_word_to_keep = False
                     break
-                if letter in self.known_absent:
+            
+            if not(is_word_to_keep):
+                continue # move onto next word
+
+            is_word_to_keep = True # reset word to keep for more checks
+            for index, letter in enumerate(word):
+                if self.known_correct[index] == "" and letter in self.known_absent:
                     is_word_to_keep = False
                     break
 
@@ -66,6 +73,7 @@ class BasicEntropyBot:
 
             if is_word_to_keep:
                 updated_word_list.append(word)
+
         self.words = updated_word_list
 
     def get_pdf(self, words):
